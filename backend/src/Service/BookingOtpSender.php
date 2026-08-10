@@ -16,7 +16,7 @@ final readonly class BookingOtpSender
     {
     }
 
-    public function consume(int $bookingId, string $code): bool
+    public function validate(int $bookingId, string $code): bool
     {
     }
 }

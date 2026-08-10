@@ -86,7 +86,7 @@ final readonly class BookingService
 
         $this->notificationService->notifyAdminAboutBooking($booking);
 
-        if (! $this->bookingOtpSender->consume($bookingId, $code)) {
+        if (! $this->bookingOtpSender->validate($bookingId, $code)) {
             throw ApiException::invalidCode();
         }
 
@@ -103,13 +103,11 @@ final readonly class BookingService
 
     private function isSameSlot(Booking $booking, int $employeeId, int $serviceId, DateTimeImmutable $startsAt): bool
     {
-        return $booking->employeeId === $employeeId
-            && $booking->serviceId === $serviceId
-            && $booking->startsAtCompanyTz()->getTimestamp() === $startsAt->getTimestamp();
+        // реализовано правильно
     }
 
     private static function parsePrice(string $price): int
     {
-        // какой-то разбор отформатированной цены (не важно)
+        // реализовано правильно
     }
 }
