@@ -56,7 +56,7 @@
 
 <script setup lang="ts">
   import {onMounted, ref, shallowRef} from 'vue'
-  import {ApiError, requestJson, requestVoid} from './apiHelper'
+  import {ApiError, request} from './apiHelper'
   import StepCode from './steps/StepCode.vue'
   import StepDateTime from './steps/StepDateTime.vue'
   import StepDone from './steps/StepDone.vue'
@@ -101,7 +101,7 @@
 
   const loadServices = (): Promise<void> => run(async () => {
     const query = new URLSearchParams({company_id: String(props.companyId)})
-    const response = await requestJson<ServicesResponse>(`/steps/services?${query.toString()}`)
+    const response = await request<ServicesResponse>(`/steps/services?${query.toString()}`)
 
     services.value = response.services
   })
@@ -111,7 +111,7 @@
     const path = `/steps/employees?${query.toString()}`
 
     selectedService.value = service
-    employees.value = (await requestJson<EmployeesResponse>(path)).employees
+    employees.value = (await request<EmployeesResponse>(path)).employees
     step.value = StepDict.EMPLOYEE
   })
 
@@ -128,7 +128,7 @@
       date,
     })
 
-    const response = await requestJson<AvailabilityResponse>(`/steps/date-time?${query.toString()}`)
+    const response = await request<AvailabilityResponse>(`/steps/date-time?${query.toString()}`)
 
     selectedDate.value = response.date
     availableSlots.value = response.slots
@@ -149,7 +149,7 @@
       phone: phone.value,
     }
 
-    booking.value = await requestJson<Booking>('/steps/create-hold-and-get-code', {
+    booking.value = await request<Booking>('/steps/create-hold-and-get-code', {
       method: 'POST',
       body: JSON.stringify(payload),
     })
@@ -160,7 +160,7 @@
   const deleteExpiredHold = (): Promise<void> => run(async () => {
     const query = new URLSearchParams({booking_id: String(booking.value!.booking_id)})
 
-    await requestVoid(`/steps/delete-expired-hold?${query.toString()}`, {method: 'DELETE'})
+    await request<void>(`/steps/delete-expired-hold?${query.toString()}`, {method: 'DELETE'})
 
     booking.value = null
     availableSlots.value = []
@@ -171,7 +171,7 @@
   })
 
   const confirmCode = (code: string): Promise<void> => run(async () => {
-    booking.value = await requestJson<Booking>('/steps/confirm-code', {
+    booking.value = await request<Booking>('/steps/confirm-code', {
       method: 'POST',
       body: JSON.stringify({booking_id: booking.value!.booking_id, code}),
     })
